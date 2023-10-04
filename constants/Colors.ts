@@ -37,6 +37,9 @@ export const colors = {
     remove: "#EC4E4E",
     manualBarcodeBackground: "#B3B7AF",
   },
+  woody: {
+    dark: "#56483b",
+  },
   toggle: {
     off: "#707070",
     on: "#1CA7D0",

@@ -12,6 +12,7 @@ export function Header() {
 
     if (now >= 15) return "20:00";
     return "12:45";
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh]);
 
   setTimeout(() => {
@@ -37,12 +38,13 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   text: {
-    fontSize: 18,
+    fontSize: 24,
     color: colors.text.primary,
     fontFamily: "Rubik-Regular",
+    paddingBottom: 20,
   },
   textHour: {
-    fontSize: 32,
+    fontSize: 42,
     color: colors.text.primary,
     fontFamily: "Rubik-Regular",
   },
