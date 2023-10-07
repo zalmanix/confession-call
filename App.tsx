@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useState } from "react";
 import SystemNavigationBar from "react-native-system-navigation-bar";
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -18,15 +18,25 @@ export type MainStackList = {
 
 const Stack = createNativeStackNavigator<MainStackList>();
 
+type ContextProps = {
+  refresh: boolean;
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export const MainContext = createContext<ContextProps | null>(null);
+
 const App = () => {
   void SystemNavigationBar.stickyImmersive();
+  const [refresh, setRefresh] = useState(false);
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeActivity} options={{ headerShown: false }} />
-        <Stack.Screen name="Admin" component={AdminActivity} options={{ headerShown: false }} />
-      </Stack.Navigator>
+      <MainContext.Provider value={{ refresh, setRefresh }}>
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Home" component={HomeActivity} options={{ headerShown: false }} />
+          <Stack.Screen name="Admin" component={AdminActivity} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </MainContext.Provider>
     </NavigationContainer>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { Header } from "../components/Header";
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ActivePriest } from "../components/ActivePriest";
 import { DialComponent } from "../components/DialComponent";
 import { useNavigation } from "@react-navigation/native";

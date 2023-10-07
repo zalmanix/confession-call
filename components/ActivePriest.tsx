@@ -6,9 +6,11 @@ import { View, StyleSheet, Text } from "react-native";
 
 import { colors } from "../constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMain } from "../hooks/context/useMain";
 
 export function ActivePriest() {
   const [priestOnDuty, setPriestOnDuty] = useState("Ładowanie");
+  const { refresh } = useMain();
 
   useEffect(() => {
     const load = async () => {
@@ -28,7 +30,7 @@ export function ActivePriest() {
     };
 
     void load();
-  }, []);
+  }, [refresh]);
 
   return (
     <View style={styles.container}>

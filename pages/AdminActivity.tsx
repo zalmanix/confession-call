@@ -1,11 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useCallback, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { MainNavigationProp } from "@app/App";
 import { colors } from "../constants/Colors";
 import Trash from "../assets/Trash.svg";
+import { useMain } from "../hooks/context/useMain";
+import { Logger } from "../services/Logger";
+import { Conditional } from "../components/Wrappers/Conditional";
+import { AddPriestModal } from "../components/Modals/AddPriestModal";
 
 type ItemData = {
   name: string;
@@ -15,10 +22,10 @@ type ItemData = {
 
 export default function AdminActivity(): JSX.Element {
   const navigation = useNavigation<MainNavigationProp>();
-  const [priestsArray, setPriestsArray] = useState<ItemData[]>([
-    { name: "br mateusz", active: true, id: 0 },
-    { name: "br Bogumił", active: false, id: 1 },
-  ]);
+  const [priestsArray, setPriestsArray] = useState<ItemData[]>([]);
+  const [isPriestModalVisible, setIsPriestModalVisible] = useState(false);
+  const [isFirstLoaded, setIsFirstLoaded] = useState(false);
+  const { setRefresh } = useMain();
 
   const storeData = useCallback(async () => {
     try {
@@ -27,29 +34,37 @@ export default function AdminActivity(): JSX.Element {
         closingHour: "20:30",
         breakHour: "12:45",
       });
+
       await AsyncStorage.setItem("mainStorage", jsonValue);
+      setRefresh((prev) => !prev);
     } catch (e) {
-      // saving error
+      Logger.error(e);
     }
-  }, [priestsArray]);
+  }, [priestsArray, setRefresh]);
 
-  // const getData = async () => {
-  //   try {
-  //     const value = await AsyncStorage.getItem("mainStorage");
-  //     if (value !== null) {
-  //       // value previously stored
-  //       console.log(value);
-  //     }
-  //   } catch (e) {
-  //     // error reading value
-  //   }
-  // };
+  const getData = async () => {
+    if (isFirstLoaded) return;
 
-  // void getData();
+    try {
+      const value = await AsyncStorage.getItem("mainStorage");
+      const parsedValue = value != null ? JSON.parse(value) : null;
+
+      if (!parsedValue) {
+        setPriestsArray([]);
+
+        return;
+      }
+
+      setPriestsArray(parsedValue.activePriest as ItemData[]);
+      setIsFirstLoaded(true);
+    } catch (e) {
+      Logger.error(e);
+    }
+  };
 
   const renderItem = ({ item }: { item: ItemData }) => {
-    const backgroundColor = item?.active ? "#6e3b6e" : "#f9c2ff";
-    const color = item?.active ? "white" : "black";
+    const backgroundColor = item?.active ? "#a97a57" : "#bfb2a1";
+    const color = item?.active ? "black" : "#56483b";
 
     return (
       <View style={styles.priestWrapper}>
@@ -81,6 +96,14 @@ export default function AdminActivity(): JSX.Element {
     );
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      void getData();
+
+      return () => {};
+    }, []),
+  );
+
   return (
     <SafeAreaView style={styles.background}>
       <View style={styles.wrapper}>
@@ -89,14 +112,18 @@ export default function AdminActivity(): JSX.Element {
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.activePriest}>{"Aktywny spowiednik"}</Text>
-          <FlatList
-            data={priestsArray}
-            renderItem={renderItem}
-            // keyExtractor={(item) => item.id}
-            // extraData={selectedId}
-          />
+          <View style={styles.contentHeaderWrapper}>
+            <Text style={styles.activePriest}>{"Aktywny spowiednik"}</Text>
+
+            <TouchableOpacity style={styles.actionBtn} onPress={() => setIsPriestModalVisible(true)}>
+              <Text>{"Dodaj spowiednika"}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <FlatList style={styles.flatlist} data={priestsArray} renderItem={renderItem} />
         </View>
+
+        <View style={styles.subContent}></View>
 
         <View style={styles.btnWrapper}>
           <TouchableOpacity
@@ -115,6 +142,13 @@ export default function AdminActivity(): JSX.Element {
             <Text>{"zapisz zmiany"}</Text>
           </TouchableOpacity>
         </View>
+
+        <Conditional
+          condition={isPriestModalVisible}
+          trueRender={
+            <AddPriestModal modalVisible={isPriestModalVisible} closeModal={() => setIsPriestModalVisible(false)} />
+          }
+        />
       </View>
     </SafeAreaView>
   );
@@ -127,10 +161,9 @@ const styles = StyleSheet.create({
   wrapper: {
     height: "100%",
     display: "flex",
-    justifyContent: "space-between",
   },
   actionBtn: {
-    backgroundColor: "#56483b",
+    backgroundColor: "#9a5938",
     width: "33%",
     height: 60,
     borderRadius: 30,
@@ -146,7 +179,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     flexDirection: "row",
-    paddingBottom: 40,
+    paddingVertical: 40,
   },
   headerText: {
     color: colors.text.primary,
@@ -160,29 +193,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   content: {
-    height: "75%",
+    height: "45%",
     display: "flex",
+    paddingHorizontal: 50,
+  },
+  subContent: {
+    height: "auto",
+  },
+  contentHeaderWrapper: {
+    display: "flex",
+    justifyContent: "space-around",
     alignItems: "center",
+    flexDirection: "row",
+    gap: 40,
+    paddingBottom: 20,
   },
   activePriest: {
     color: colors.text.primary,
     fontSize: 20,
   },
   item: {
-    padding: 20,
+    padding: 15,
     marginVertical: 8,
-    marginHorizontal: 16,
+    minWidth: "60%",
   },
   title: {
     fontSize: 32,
+    textTransform: "capitalize",
+    color: "#56483b",
   },
   removeBtn: {
     backgroundColor: "red",
   },
   priestWrapper: {
     display: "flex",
-    justifyContent: "space-around",
     flexDirection: "row",
     alignItems: "center",
+    gap: 20,
+  },
+  flatlist: {
+    paddingVertical: 20,
   },
 });
