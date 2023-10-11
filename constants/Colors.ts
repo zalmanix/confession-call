@@ -39,6 +39,7 @@ export const colors = {
   },
   woody: {
     dark: "#56483b",
+    darkText: "white",
   },
   toggle: {
     off: "#707070",

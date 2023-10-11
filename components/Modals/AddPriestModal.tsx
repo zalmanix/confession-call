@@ -9,23 +9,18 @@ import { colors } from "../../constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Logger } from "../../services/Logger";
 
-interface RFIDAlreadyScannedModalProps {
+interface AddPriestModalProps {
   modalVisible: boolean;
   closeModal: () => void;
+  updateData: () => Promise<void>;
 }
 
-export function AddPriestModal(props: RFIDAlreadyScannedModalProps) {
-  const { closeModal } = props;
+export function AddPriestModal(props: AddPriestModalProps) {
+  const { closeModal, updateData } = props;
   const [priestName, setPriestName] = useState("");
 
   const onConfirm = useCallback(async () => {
     try {
-      const value = await AsyncStorage.getItem("mainStorage");
-      const parsedValue = value != null ? JSON.parse(value) : null;
-      const activePriests = parsedValue.activePriest;
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      const id = activePriests.length > 0 ? activePriests.length + 1 : 1;
-
       if (priestName === "" || priestName === null) {
         setPriestName("");
         closeModal();
@@ -33,17 +28,36 @@ export function AddPriestModal(props: RFIDAlreadyScannedModalProps) {
         return;
       }
 
+      const value = await AsyncStorage.getItem("mainStorage");
+
+      if (value) {
+        const parsedValue = value != null ? JSON.parse(value) : null;
+        const activePriests = parsedValue.activePriest;
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+        const id = activePriests ? activePriests[activePriests.length - 1].id + 1 : 1;
+
+        const jsonValue = JSON.stringify({
+          activePriest: [...activePriests, { name: priestName, active: false, id }],
+          closingHour: parsedValue.closingHour,
+          breakHour: parsedValue.breakHour,
+        });
+        await AsyncStorage.setItem("mainStorage", jsonValue);
+
+        return;
+      }
+
       const jsonValue = JSON.stringify({
-        activePriest: [...activePriests, { name: priestName, active: false, id }],
-        closingHour: parsedValue.closingHour,
-        breakHour: parsedValue.breakHour,
+        activePriest: [{ name: priestName, active: false, id: 1 }],
       });
+
       await AsyncStorage.setItem("mainStorage", jsonValue);
     } catch (e) {
       Logger.error(e);
+    } finally {
+      void updateData();
+      setPriestName("");
     }
-    setPriestName("");
-  }, [closeModal, priestName]);
+  }, [closeModal, priestName, updateData]);
 
   return (
     <Modal {...props} closeModal={closeModal}>

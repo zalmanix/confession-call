@@ -4,14 +4,14 @@ import { Button } from "../Buttons/Button";
 import { Modal } from "./Modal";
 import { colors } from "../../constants/Colors";
 
-interface RFIDAlreadyScannedModalProps {
+interface AuthModalProps {
   modalVisible: boolean;
   closeModal: () => void;
   confirmModal: () => void;
   setPasswordValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function AuthModal(props: RFIDAlreadyScannedModalProps) {
+export function AuthModal(props: AuthModalProps) {
   const { closeModal, confirmModal, setPasswordValue } = props;
 
   return (

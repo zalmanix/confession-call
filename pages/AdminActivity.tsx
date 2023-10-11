@@ -13,6 +13,7 @@ import { useMain } from "../hooks/context/useMain";
 import { Logger } from "../services/Logger";
 import { Conditional } from "../components/Wrappers/Conditional";
 import { AddPriestModal } from "../components/Modals/AddPriestModal";
+import { ChangeHoursModal } from "../components/Modals/ChangeHoursModal";
 
 type ItemData = {
   name: string;
@@ -21,18 +22,24 @@ type ItemData = {
 };
 
 export default function AdminActivity(): JSX.Element {
-  const navigation = useNavigation<MainNavigationProp>();
-  const [priestsArray, setPriestsArray] = useState<ItemData[]>([]);
   const [isPriestModalVisible, setIsPriestModalVisible] = useState(false);
+  const [isHoursModalVisible, setIsHoursModalVisible] = useState(false);
+  const [priestsArray, setPriestsArray] = useState<ItemData[]>([]);
+  const [closingHourSunday, setClosingHourSunday] = useState("21:00");
   const [isFirstLoaded, setIsFirstLoaded] = useState(false);
+  const navigation = useNavigation<MainNavigationProp>();
+  const [closingHour, setClosingHour] = useState("20:30");
+  const [breakHour, setBreakHour] = useState("12:45");
+
   const { setRefresh } = useMain();
 
   const storeData = useCallback(async () => {
     try {
       const jsonValue = JSON.stringify({
         activePriest: priestsArray,
-        closingHour: "20:30",
-        breakHour: "12:45",
+        closingHourSunday,
+        closingHour,
+        breakHour,
       });
 
       await AsyncStorage.setItem("mainStorage", jsonValue);
@@ -40,11 +47,9 @@ export default function AdminActivity(): JSX.Element {
     } catch (e) {
       Logger.error(e);
     }
-  }, [priestsArray, setRefresh]);
+  }, [breakHour, closingHour, closingHourSunday, priestsArray, setRefresh]);
 
   const getData = async () => {
-    if (isFirstLoaded) return;
-
     try {
       const value = await AsyncStorage.getItem("mainStorage");
       const parsedValue = value != null ? JSON.parse(value) : null;
@@ -56,7 +61,6 @@ export default function AdminActivity(): JSX.Element {
       }
 
       setPriestsArray(parsedValue.activePriest as ItemData[]);
-      setIsFirstLoaded(true);
     } catch (e) {
       Logger.error(e);
     }
@@ -64,7 +68,7 @@ export default function AdminActivity(): JSX.Element {
 
   const renderItem = ({ item }: { item: ItemData }) => {
     const backgroundColor = item?.active ? "#a97a57" : "#bfb2a1";
-    const color = item?.active ? "black" : "#56483b";
+    const color = item?.active ? "white" : "#56483b";
 
     return (
       <View style={styles.priestWrapper}>
@@ -116,14 +120,38 @@ export default function AdminActivity(): JSX.Element {
             <Text style={styles.activePriest}>{"Aktywny spowiednik"}</Text>
 
             <TouchableOpacity style={styles.actionBtn} onPress={() => setIsPriestModalVisible(true)}>
-              <Text>{"Dodaj spowiednika"}</Text>
+              <Text style={styles.actionBtnText}>{"Dodaj spowiednika"}</Text>
             </TouchableOpacity>
           </View>
 
           <FlatList style={styles.flatlist} data={priestsArray} renderItem={renderItem} />
         </View>
 
-        <View style={styles.subContent}></View>
+        <View style={styles.subContent}>
+          <Text style={styles.activePriest}>{"Zmiany godzinowe"}</Text>
+
+          <View style={styles.hourWrapper}>
+            <View style={styles.hourContainer}>
+              <View style={styles.hour}>
+                <Text style={styles.hourText}>{`Koniec spowiedzi: ${closingHour}`}</Text>
+              </View>
+
+              <View style={styles.hour}>
+                <Text style={styles.hourText}>{`Koniec spowiedzi niedzielnej: ${closingHourSunday}`}</Text>
+              </View>
+
+              <View style={styles.hour}>
+                <Text style={styles.hourText}>{`Przerwa w spowiedzi: ${breakHour}`}</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.actionBtn, { marginTop: 20 }]}
+              onPress={() => setIsHoursModalVisible(true)}>
+              <Text style={styles.actionBtnText}>{"Zmień godziny"}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View style={styles.btnWrapper}>
           <TouchableOpacity
@@ -131,7 +159,7 @@ export default function AdminActivity(): JSX.Element {
             onPress={() => {
               navigation.navigate("Home");
             }}>
-            <Text>{"wróć"}</Text>
+            <Text style={styles.actionBtnText}>{"wróć"}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -139,14 +167,31 @@ export default function AdminActivity(): JSX.Element {
             onPress={() => {
               void storeData();
             }}>
-            <Text>{"zapisz zmiany"}</Text>
+            <Text style={styles.actionBtnText}>{"zapisz zmiany"}</Text>
           </TouchableOpacity>
         </View>
 
         <Conditional
           condition={isPriestModalVisible}
           trueRender={
-            <AddPriestModal modalVisible={isPriestModalVisible} closeModal={() => setIsPriestModalVisible(false)} />
+            <AddPriestModal
+              modalVisible={isPriestModalVisible}
+              closeModal={() => setIsPriestModalVisible(false)}
+              updateData={() => getData()}
+            />
+          }
+        />
+
+        <Conditional
+          condition={isHoursModalVisible}
+          trueRender={
+            <ChangeHoursModal
+              modalVisible={isHoursModalVisible}
+              closeModal={() => setIsHoursModalVisible(false)}
+              setClosingHourSunday={setClosingHourSunday}
+              setClosingHour={setClosingHour}
+              setBreakHour={setBreakHour}
+            />
           }
         />
       </View>
@@ -169,17 +214,21 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginRight: "auto",
     marginLeft: "auto",
-    fontSize: 30,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  actionBtnText: {
+    textTransform: "capitalize",
+    color: colors.woody.darkText,
+    fontSize: 20,
   },
   btnWrapper: {
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
     flexDirection: "row",
-    paddingVertical: 40,
+    paddingVertical: 100,
   },
   headerText: {
     color: colors.text.primary,
@@ -187,7 +236,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 30,
-    paddingBottom: 20,
+    paddingBottom: 80,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -198,7 +247,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
   },
   subContent: {
-    height: "auto",
+    paddingVertical: 20,
+    paddingHorizontal: 50,
+    display: "flex",
+    justifyContent: "flex-start",
   },
   contentHeaderWrapper: {
     display: "flex",
@@ -210,7 +262,7 @@ const styles = StyleSheet.create({
   },
   activePriest: {
     color: colors.text.primary,
-    fontSize: 20,
+    fontSize: 32,
   },
   item: {
     padding: 15,
@@ -233,5 +285,20 @@ const styles = StyleSheet.create({
   },
   flatlist: {
     paddingVertical: 20,
+  },
+  hourContainer: {
+    display: "flex",
+    paddingTop: 10,
+  },
+  hourWrapper: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  hour: {
+    display: "flex",
+  },
+  hourText: {
+    color: colors.text.primary,
+    fontSize: 22,
   },
 });

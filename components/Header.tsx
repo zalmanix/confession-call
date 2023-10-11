@@ -1,23 +1,50 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 
 import { colors } from "../constants/Colors";
 import dayjs from "dayjs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function Header() {
-  const [refresh, setRefresh] = useState(false);
+  const [refreshDate, setRefreshDate] = useState(false);
 
   const hourOfConfession = useMemo(() => {
-    const now = dayjs().hour();
+    const now = dayjs();
+    // Check if today is Sunday
+    if (now.day() === 0) {
+      return "21:00";
+    }
 
-    if (now >= 15) return "20:00";
-    return "12:45";
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refresh]);
+    if (now.hour() >= 15) {
+      return "20:00";
+    } else {
+      return "12:45";
+    }
+  }, [refreshDate]);
 
   setTimeout(() => {
-    setRefresh((prev) => !prev);
+    setRefreshDate((prev) => !prev);
   }, 5000);
+
+  // useEffect(() => {
+  //   const load = async () => {
+  //     const value = await AsyncStorage.getItem("mainStorage");
+  //     const parsedValue = value != null ? JSON.parse(value) : null;
+
+  //     if (!parsedValue) {
+  //       setPriestOnDuty("Błąd ustawień");
+
+  //       return;
+  //     }
+
+  //     const priests = parsedValue?.activePriest;
+  //     const activePriest = priests?.filter((priest: { active: boolean; name: string }) => priest.active);
+
+  //     setPriestOnDuty(activePriest[0].name as string);
+  //   };
+
+  //   void load();
+  // }, [refresh]);
 
   return (
     <View style={styles.container}>
