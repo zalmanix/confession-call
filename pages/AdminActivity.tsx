@@ -15,7 +15,7 @@ import { Conditional } from "../components/Wrappers/Conditional";
 import { AddPriestModal } from "../components/Modals/AddPriestModal";
 import { ChangeHoursModal } from "../components/Modals/ChangeHoursModal";
 
-type ItemData = {
+export type ItemData = {
   name: string;
   active: boolean;
   id: number;
@@ -26,7 +26,7 @@ export default function AdminActivity(): JSX.Element {
   const [isHoursModalVisible, setIsHoursModalVisible] = useState(false);
   const [priestsArray, setPriestsArray] = useState<ItemData[]>([]);
   const [closingHourSunday, setClosingHourSunday] = useState("21:00");
-  const [isFirstLoaded, setIsFirstLoaded] = useState(false);
+  // const [isFirstLoaded, setIsFirstLoaded] = useState(false);
   const navigation = useNavigation<MainNavigationProp>();
   const [closingHour, setClosingHour] = useState("20:30");
   const [breakHour, setBreakHour] = useState("12:45");
@@ -67,8 +67,10 @@ export default function AdminActivity(): JSX.Element {
   };
 
   const renderItem = ({ item }: { item: ItemData }) => {
-    const backgroundColor = item?.active ? "#a97a57" : "#bfb2a1";
-    const color = item?.active ? "white" : "#56483b";
+    // const backgroundColor = item?.active ? "#a97a57" : "#bfb2a1";
+    // const color = item?.active ? "white" : "#56483b";
+    const backgroundColor = "#bfb2a1";
+    const color = "#56483b";
 
     return (
       <View style={styles.priestWrapper}>
@@ -117,7 +119,7 @@ export default function AdminActivity(): JSX.Element {
 
         <View style={styles.content}>
           <View style={styles.contentHeaderWrapper}>
-            <Text style={styles.activePriest}>{"Aktywny spowiednik"}</Text>
+            <Text style={styles.activePriest}>{"Spowiednicy"}</Text>
 
             <TouchableOpacity style={styles.actionBtn} onPress={() => setIsPriestModalVisible(true)}>
               <Text style={styles.actionBtnText}>{"Dodaj spowiednika"}</Text>
@@ -127,7 +129,7 @@ export default function AdminActivity(): JSX.Element {
           <FlatList style={styles.flatlist} data={priestsArray} renderItem={renderItem} />
         </View>
 
-        <View style={styles.subContent}>
+        {/* <View style={styles.subContent}>
           <Text style={styles.activePriest}>{"Zmiany godzinowe"}</Text>
 
           <View style={styles.hourWrapper}>
@@ -151,7 +153,7 @@ export default function AdminActivity(): JSX.Element {
               <Text style={styles.actionBtnText}>{"Zmień godziny"}</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.btnWrapper}>
           <TouchableOpacity

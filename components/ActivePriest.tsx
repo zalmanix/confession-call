@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 
 import { colors } from "../constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMain } from "../hooks/context/useMain";
+import Swiper from "react-native-swiper";
 
 export function ActivePriest() {
-  const [priestOnDuty, setPriestOnDuty] = useState("Ładowanie");
+  const [priestsOnDuty, setPriestsOnDuty] = useState([]);
+  // const [activeId, setActiveId] = useState();
   const { refresh } = useMain();
 
   useEffect(() => {
@@ -18,19 +20,28 @@ export function ActivePriest() {
       const parsedValue = value != null ? JSON.parse(value) : null;
 
       if (!parsedValue) {
-        setPriestOnDuty("Błąd ustawień");
+        setPriestsOnDuty([]);
 
         return;
       }
 
       const priests = parsedValue?.activePriest;
-      const activePriest = priests?.filter((priest: { active: boolean; name: string }) => priest.active);
+      // const activePriest = priests?.filter((priest: { active: boolean; name: string }) => priest.active);
 
-      setPriestOnDuty(activePriest[0].name as string);
+      // setActiveId(activePriest.id);
+      setPriestsOnDuty(priests);
     };
 
     void load();
   }, [refresh]);
+
+  const slides = useMemo(() => {
+    return priestsOnDuty.map((priest) => (
+      <View style={styles.slide} key={priest.id}>
+        <Text style={styles.text}>{priest.name}</Text>
+      </View>
+    ));
+  }, [priestsOnDuty]);
 
   return (
     <View style={styles.container}>
@@ -38,7 +49,18 @@ export function ActivePriest() {
 
       <View style={styles.wrapper}>
         <Text style={styles.text}>Aktualnie spowiada:</Text>
-        <Text style={styles.text}>{priestOnDuty}</Text>
+
+        <Swiper
+          style={styles.swiperWrapper}
+          showsButtons={false}
+          showsPagination={false}
+          onTouchEnd={() => {}}
+          // onIndexChanged={(index) => {
+          //   console.log(index);
+          // }}
+        >
+          {slides}
+        </Swiper>
       </View>
 
       <View style={styles.divider}></View>
@@ -53,17 +75,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 20,
     paddingBottom: 20,
-    backgroundColor: "white",
   },
   text: {
     fontSize: 42,
     color: colors.text.primary,
     fontFamily: "Rubik-Regular",
+    textTransform: "capitalize",
   },
   divider: {
     width: "66%",
     height: 2,
-    backgroundColor: "orange",
+    backgroundColor: "#a97a57",
     marginRight: "auto",
     marginLeft: "auto",
   },
@@ -73,5 +95,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 40,
     paddingBottom: 40,
+    maxHeight: 250,
+  },
+  swiperWrapper: {
+    height: 100,
+  },
+  slide: {
+    flex: 1,
+    maxHeight: 100,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

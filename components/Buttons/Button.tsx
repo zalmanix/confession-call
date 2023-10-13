@@ -5,7 +5,7 @@ import { colors } from "../../constants/Colors";
 import { Row } from "../Containers/Row";
 
 interface ButtonProps extends TouchableOpacityProps {
-  variant?: "primary" | "secondary" | "simple";
+  variant?: "primary" | "secondary" | "simple" | "dial";
   text?: string;
   isLoading?: boolean;
 }
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     width: "auto",
   },
+  dial: {},
   textprimary: {
     color: colors.text.dark,
     fontFamily: "Rubik-Medium",
@@ -81,10 +82,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: "center",
   },
-  textdisabled: {
-    color: colors.disabled,
+  textdial: {
+    color: colors.text.dark,
     fontFamily: "Rubik-Medium",
-    fontSize: 13,
+    fontSize: 33,
     textAlign: "center",
   },
   activityIndicator: {
