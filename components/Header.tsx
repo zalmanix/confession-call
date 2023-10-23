@@ -3,28 +3,30 @@ import { View, StyleSheet, Text } from "react-native";
 
 import { colors } from "../constants/Colors";
 import dayjs from "dayjs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import Logo from "../assets/Logo.svg";
 
 export function Header() {
-  const [refreshDate, setRefreshDate] = useState(false);
+  // const [refreshDate, setRefreshDate] = useState(false);
 
-  const hourOfConfession = useMemo(() => {
-    const now = dayjs();
-    // Check if today is Sunday
-    if (now.day() === 0) {
-      return "21:00";
-    }
+  // const hourOfConfession = useMemo(() => {
+  //   const now = dayjs();
+  //   // Check if today is Sunday
+  //   if (now.day() === 0) {
+  //     return "21:00";
+  //   }
 
-    if (now.hour() >= 15) {
-      return "20:00";
-    } else {
-      return "12:45";
-    }
-  }, [refreshDate]);
+  //   if (now.hour() >= 15) {
+  //     return "20:00";
+  //   } else {
+  //     return "12:45";
+  //   }
+  // }, [refreshDate]);
 
-  setTimeout(() => {
-    setRefreshDate((prev) => !prev);
-  }, 5000);
+  // setTimeout(() => {
+  //   setRefreshDate((prev) => !prev);
+  // }, 5000);
 
   // useEffect(() => {
   //   const load = async () => {
@@ -48,9 +50,13 @@ export function Header() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Dyżur spowiedzi do:</Text>
+      <Text style={styles.headerText}>Bracia Mniejsi Kapucyni</Text>
 
-      <Text style={styles.textHour}>{hourOfConfession}</Text>
+      <Logo style={styles.logo} />
+
+      {/* <Text style={styles.text}>Dyżur spowiedzi do:</Text> */}
+
+      {/* <Text style={styles.textHour}>{hourOfConfession}</Text> */}
     </View>
   );
 }
@@ -62,7 +68,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 20,
     paddingBottom: 20,
-    backgroundColor: "white",
   },
   text: {
     fontSize: 24,
@@ -74,5 +79,15 @@ const styles = StyleSheet.create({
     fontSize: 42,
     color: colors.text.primary,
     fontFamily: "Rubik-Regular",
+  },
+  headerText: {
+    fontFamily: "MyonaSans-Display",
+    fontSize: 42,
+    color: "white",
+    textTransform: "uppercase",
+  },
+  logo: {
+    width: "100%",
+    height: 500,
   },
 });

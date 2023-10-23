@@ -38,17 +38,15 @@ export function ActivePriest() {
   const slides = useMemo(() => {
     return priestsOnDuty.map((priest) => (
       <View style={styles.slide} key={priest.id}>
-        <Text style={styles.text}>{priest.name}</Text>
+        <Text style={styles.textSlide}>{priest.name}</Text>
       </View>
     ));
   }, [priestsOnDuty]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.divider}></View>
-
       <View style={styles.wrapper}>
-        <Text style={styles.text}>Aktualnie spowiada:</Text>
+        <Text style={styles.text}>Obecnie spowiada:</Text>
 
         <Swiper
           style={styles.swiperWrapper}
@@ -62,8 +60,6 @@ export function ActivePriest() {
           {slides}
         </Swiper>
       </View>
-
-      <View style={styles.divider}></View>
     </View>
   );
 }
@@ -77,17 +73,16 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   text: {
-    fontSize: 42,
-    color: colors.text.primary,
-    fontFamily: "Rubik-Regular",
-    textTransform: "capitalize",
+    fontSize: 45,
+    color: colors.text.blue,
+    fontFamily: "MyonaSans-Display",
+    textTransform: "uppercase",
   },
-  divider: {
-    width: "66%",
-    height: 2,
-    backgroundColor: "#a97a57",
-    marginRight: "auto",
-    marginLeft: "auto",
+  textSlide: {
+    fontSize: 80,
+    color: colors.text.primary,
+    fontFamily: "MyonaSans-Display",
+    textTransform: "uppercase",
   },
   wrapper: {
     display: "flex",

@@ -19,10 +19,10 @@ export const colors = {
     gray: "#393E43",
   },
   text: {
-    primary: "#000000",
+    primary: "#FEFEFE",
+    blue: "#009edd",
     secondary: "#A7ACB1",
     dark: "#13181C",
-    blue: "#1593c6",
   },
   keyboard: {
     background: "#6B6F72",

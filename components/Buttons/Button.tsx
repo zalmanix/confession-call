@@ -83,10 +83,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textdial: {
-    color: colors.text.dark,
-    fontFamily: "Rubik-Medium",
-    fontSize: 33,
+    fontFamily: "MyonaSans-Display",
+    fontSize: 50,
     textAlign: "center",
+    color: colors.text.primary,
   },
   activityIndicator: {
     flex: 1,

@@ -14,9 +14,9 @@ export function DialComponent() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Przyciśnij przycisk poniżej aby powiadomić brata</Text>
+      <Text style={styles.text}>By wezwać spowiednika</Text>
 
-      <Button text={"Powiadom spowiednika"} onPress={diallNumber} style={styles.dialBtn} variant="dial" />
+      <Button text={"Naciśnij tutaj"} onPress={diallNumber} style={styles.dialBtn} variant="dial" />
     </View>
   );
 }
@@ -31,17 +31,17 @@ const styles = StyleSheet.create({
     gap: 30,
   },
   text: {
-    fontSize: 24,
-    color: colors.text.primary,
-    fontFamily: "Rubik-Regular",
+    fontSize: 40,
+    color: colors.text.blue,
+    fontFamily: "MyonaSans-Display",
+    textTransform: "capitalize",
   },
   dialBtn: {
-    width: "66%",
+    width: "60%",
     height: 160,
     borderRadius: 20,
-    backgroundColor: "#bfb2a1",
+    backgroundColor: colors.text.blue,
     marginRight: "auto",
     marginLeft: "auto",
-    fontSize: 40,
   },
 });

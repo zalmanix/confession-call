@@ -55,7 +55,7 @@ export default function HomeActivity(): JSX.Element {
 const styles = StyleSheet.create({
   background: {
     height: "100%",
-    backgroundColor: "white",
+    backgroundColor: "black",
   },
   wrapper: {
     height: "100%",
