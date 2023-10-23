@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   title: {
-    fontFamily: "Rubik-Bold",
+    fontFamily: "MyonaSans-Display",
     marginVertical: 10,
   },
   inputStyles: {

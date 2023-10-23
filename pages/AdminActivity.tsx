@@ -69,8 +69,8 @@ export default function AdminActivity(): JSX.Element {
   const renderItem = ({ item }: { item: ItemData }) => {
     // const backgroundColor = item?.active ? "#a97a57" : "#bfb2a1";
     // const color = item?.active ? "white" : "#56483b";
-    const backgroundColor = "#bfb2a1";
-    const color = "#56483b";
+    const backgroundColor = colors.text.blue;
+    const color = colors.text.primary;
 
     return (
       <View style={styles.priestWrapper}>
@@ -204,14 +204,15 @@ export default function AdminActivity(): JSX.Element {
 const styles = StyleSheet.create({
   background: {
     height: "100%",
+    backgroundColor: "black",
   },
   wrapper: {
     height: "100%",
     display: "flex",
   },
   actionBtn: {
-    backgroundColor: "#9a5938",
-    width: "33%",
+    backgroundColor: colors.text.blue,
+    width: "40%",
     height: 60,
     borderRadius: 30,
     marginRight: "auto",
@@ -224,6 +225,7 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     color: colors.woody.darkText,
     fontSize: 20,
+    fontFamily: "MyonaSans-Display",
   },
   btnWrapper: {
     display: "flex",
@@ -235,6 +237,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: colors.text.primary,
     fontSize: 42,
+    fontFamily: "MyonaSans-Display",
   },
   header: {
     padding: 30,
@@ -265,6 +268,7 @@ const styles = StyleSheet.create({
   activePriest: {
     color: colors.text.primary,
     fontSize: 32,
+    fontFamily: "MyonaSans-Display",
   },
   item: {
     padding: 15,
@@ -275,6 +279,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textTransform: "capitalize",
     color: "#56483b",
+    fontFamily: "MyonaSans-Display",
   },
   removeBtn: {
     backgroundColor: "red",

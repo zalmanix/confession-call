@@ -66,19 +66,19 @@ const styles = StyleSheet.create({
   dial: {},
   textprimary: {
     color: colors.text.dark,
-    fontFamily: "Rubik-Medium",
+    fontFamily: "MyonaSans-Display",
     fontSize: 13,
     textAlign: "center",
   },
   textsecondary: {
     color: colors.text.blue,
-    fontFamily: "Rubik-Medium",
+    fontFamily: "MyonaSans-Display",
     fontSize: 13,
     textAlign: "center",
   },
   textsimple: {
     color: colors.text.blue,
-    fontFamily: "Rubik-Medium",
+    fontFamily: "MyonaSans-Display",
     fontSize: 13,
     textAlign: "center",
   },
