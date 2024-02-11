@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useCallback, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -67,8 +64,6 @@ export default function AdminActivity(): JSX.Element {
   };
 
   const renderItem = ({ item }: { item: ItemData }) => {
-    // const backgroundColor = item?.active ? "#a97a57" : "#bfb2a1";
-    // const color = item?.active ? "white" : "#56483b";
     const backgroundColor = colors.text.blue;
     const color = colors.text.primary;
 

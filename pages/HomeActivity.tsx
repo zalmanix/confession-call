@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Header } from "../components/Header";
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -10,12 +10,27 @@ import { Conditional } from "../components/Wrappers/Conditional";
 import { AuthModal } from "../components/Modals/AuthModal";
 import { DEFAULT_PASSWORD } from "@env";
 import Gear from "../assets/Gear.svg";
+import { useMain } from "../hooks/context/useMain";
+import { CHECK_ASLEEP_INTERVAL } from "../constants/Constants";
 
 export default function HomeActivity(): JSX.Element {
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false);
   const [passwordValue, setPasswordValue] = useState("");
+  const { isAsleep } = useMain();
 
   const navigation = useNavigation<MainNavigationProp>();
+
+  const checkSystemTime = useCallback(() => {
+    if (isAsleep) navigation.navigate("Sleep");
+
+    setTimeout(checkSystemTime, CHECK_ASLEEP_INTERVAL);
+  }, [isAsleep, navigation]);
+
+  useEffect(() => {
+    const interval = setTimeout(checkSystemTime, CHECK_ASLEEP_INTERVAL);
+
+    return () => clearTimeout(interval);
+  }, [checkSystemTime]);
 
   return (
     <SafeAreaView style={styles.background}>
