@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useEffect, useMemo, useState } from "react";
 import { View, StyleSheet, Text } from "react-native";
 
@@ -11,8 +8,36 @@ import Swiper from "react-native-swiper";
 
 export function ActivePriest() {
   const [priestsOnDuty, setPriestsOnDuty] = useState([]);
-  // const [activeId, setActiveId] = useState();
+  const [activeIndex, setActiveIndex] = useState(0);
   const { refresh } = useMain();
+
+  useEffect(() => {
+    const setActivePriest = async () => {
+      const value = await AsyncStorage.getItem("mainStorage");
+
+      if (value) {
+        const parsedValue = value != null ? JSON.parse(value) : null;
+        const activePriests = parsedValue.activePriest;
+        const priestFromSlider = activePriests.map((item: { id: any; name: any; number: any; }, i: number) => {
+          if (activeIndex === i) return { active: true, id: item.id, name: item.name, number: item.number };
+        
+          return { active: false, id: item.id, name: item.name, number: item.number };
+        });
+
+        const jsonValue = JSON.stringify({
+          activePriest: [...priestFromSlider],
+          closingHour: parsedValue.closingHour,
+          breakHour: parsedValue.breakHour,
+          closingHourSunday: parsedValue.closingHourSunday,
+        });
+        await AsyncStorage.setItem("mainStorage", jsonValue);
+
+        return;
+      }
+    }
+
+    setActivePriest();
+  },[activeIndex]);
 
   useEffect(() => {
     const load = async () => {
@@ -26,9 +51,7 @@ export function ActivePriest() {
       }
 
       const priests = parsedValue?.activePriest;
-      // const activePriest = priests?.filter((priest: { active: boolean; name: string }) => priest.active);
 
-      // setActiveId(activePriest.id);
       setPriestsOnDuty(priests);
     };
 
@@ -36,7 +59,7 @@ export function ActivePriest() {
   }, [refresh]);
 
   const slides = useMemo(() => {
-    return priestsOnDuty.map((priest) => (
+    return priestsOnDuty.map((priest: {id: number, name: string}) => (
       <View style={styles.slide} key={priest.id}>
         <Text style={styles.textSlide}>{priest.name}</Text>
       </View>
@@ -53,9 +76,9 @@ export function ActivePriest() {
           showsButtons={false}
           showsPagination={false}
           onTouchEnd={() => {}}
-          // onIndexChanged={(index) => {
-          //   console.log(index);
-          // }}
+          onIndexChanged={(index) => {
+            setActiveIndex(index);
+          }}
         >
           {slides}
         </Swiper>

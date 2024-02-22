@@ -18,10 +18,11 @@ interface AddPriestModalProps {
 export function AddPriestModal(props: AddPriestModalProps) {
   const { closeModal, updateData } = props;
   const [priestName, setPriestName] = useState("");
+  const [priestNumber, setPriestNumber] = useState<number>();
 
   const onConfirm = useCallback(async () => {
     try {
-      if (priestName === "" || priestName === null) {
+      if (priestName === "" || priestName === null || priestNumber === null) {
         setPriestName("");
         closeModal();
 
@@ -33,11 +34,10 @@ export function AddPriestModal(props: AddPriestModalProps) {
       if (value) {
         const parsedValue = value != null ? JSON.parse(value) : null;
         const activePriests = parsedValue.activePriest;
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         const id = activePriests ? activePriests[activePriests.length - 1].id + 1 : 1;
 
         const jsonValue = JSON.stringify({
-          activePriest: [...activePriests, { name: priestName, active: false, id }],
+          activePriest: [...activePriests, { name: priestName, active: false, id, number: priestNumber}],
           closingHour: parsedValue.closingHour,
           breakHour: parsedValue.breakHour,
         });
@@ -47,7 +47,7 @@ export function AddPriestModal(props: AddPriestModalProps) {
       }
 
       const jsonValue = JSON.stringify({
-        activePriest: [{ name: priestName, active: false, id: 1 }],
+        activePriest: [{ name: priestName, active: false, id: 1, number: priestNumber }],
       });
 
       await AsyncStorage.setItem("mainStorage", jsonValue);
@@ -57,24 +57,42 @@ export function AddPriestModal(props: AddPriestModalProps) {
       void updateData();
       setPriestName("");
     }
-  }, [closeModal, priestName, updateData]);
+  }, [closeModal, priestName, updateData, priestNumber]);
 
   return (
     <Modal {...props} closeModal={closeModal}>
       <View style={styles.container}>
-        <Text style={styles.title}>{"Imię dodawanego spowiednika"}</Text>
+        <View style={styles.container}>
+          <Text style={styles.title}>{"Imię dodawanego spowiednika"}</Text>
 
-        <TextInput
-          style={styles.inputStyles}
-          placeholderTextColor={colors.text.primary}
-          onChange={({ nativeEvent: { text } }) => setPriestName(text)}
-          autoCapitalize="none"
-          autoComplete="off"
-          autoCorrect={false}
-          disableFullscreenUI={true}
-          selectionColor={colors.text.primary}
-          underlineColorAndroid="transparent"
-        />
+          <TextInput
+            style={styles.inputStyles}
+            placeholderTextColor={colors.text.primary}
+            onChange={({ nativeEvent: { text } }) => setPriestName(text)}
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
+            disableFullscreenUI={true}
+            selectionColor={colors.text.primary}
+            underlineColorAndroid="transparent"
+          />
+        </View>
+
+        <View style={styles.container}>
+          <Text style={styles.title}>{"Numer spowiednika"}</Text>
+
+          <TextInput 
+            style={styles.inputStyles}
+            placeholderTextColor={colors.text.primary}
+            keyboardType='numeric'
+            onChange={({ nativeEvent: { text } }) => setPriestNumber(parseInt(text.replace(/[^0-9]/g, '')))}
+            maxLength={9}
+            autoComplete="off"
+            autoCorrect={false}
+            disableFullscreenUI={true}
+            selectionColor={colors.text.primary}
+          />
+        </View>
 
         <View style={styles.buttonWrapper}>
           <Button variant="simple" text={"wróć"} onPress={() => closeModal()} />

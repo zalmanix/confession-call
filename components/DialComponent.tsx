@@ -6,10 +6,21 @@ import { callNumber } from "../utils/callNumber";
 import { Button } from "./Buttons/Button";
 
 import { PHONE_NUMBER } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function DialComponent() {
-  const diallNumber = useCallback(() => {
-    void callNumber(`${PHONE_NUMBER as string}`);
+  const diallNumber = useCallback(async () => {
+    const value = await AsyncStorage.getItem("mainStorage");
+    const parsedValue = value != null ? JSON.parse(value) : null;
+    const activePriestNumber = parsedValue.activePriest.filter((priest: any) => priest.active);
+
+    if (activePriestNumber[0].number) {
+      void callNumber(`${activePriestNumber[0].number as string}`)
+
+      return
+    }
+
+    void callNumber(`${PHONE_NUMBER}`);
   }, []);
 
   return (

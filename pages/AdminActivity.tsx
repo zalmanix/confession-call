@@ -15,6 +15,7 @@ import { ChangeHoursModal } from "../components/Modals/ChangeHoursModal";
 export type ItemData = {
   name: string;
   active: boolean;
+  number: number;
   id: number;
 };
 
@@ -84,7 +85,9 @@ export default function AdminActivity(): JSX.Element {
             });
           }}
           style={[styles.item, { backgroundColor }]}>
-          <Text style={[styles.title, { color }]}>{item.name}</Text>
+          <Text style={[styles.title, { color }]}>{item.name}:</Text>
+
+          <Text style={[styles.title, { color, paddingLeft: 10 }]}>{item.number}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -154,9 +157,10 @@ export default function AdminActivity(): JSX.Element {
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={() => {
+              void storeData();
               navigation.navigate("Home");
             }}>
-            <Text style={styles.actionBtnText}>{"wróć"}</Text>
+            <Text style={styles.actionBtnText}>{"zapisz i wróć"}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -269,6 +273,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 8,
     minWidth: "60%",
+    display: "flex",
+    flexDirection: "row"
   },
   title: {
     fontSize: 32,
